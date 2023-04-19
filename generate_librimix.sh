@@ -4,6 +4,7 @@ set -eu  # Exit on error
 storage_dir=$1
 librispeech_dir=$storage_dir/LibriSpeech
 wham_dir=$storage_dir/wham_noise
+aishell_dir=$storage_dir/AISHELL1
 librimix_outdir=$storage_dir/
 
 function LibriSpeech_dev_clean() {
@@ -46,6 +47,18 @@ function LibriSpeech_clean360() {
 	fi
 }
 
+function AISHELL1() {
+	if ! test -e $aishell_dir; then
+		echo "Download aishell_dir into $storage_dir"
+		# If downloading stalls for more than 20s, relaunch from previous state.
+		wget -c --tries=0 --read-timeout=20 https://www.openslr.org/resources/33/data_aishell.tgz -P $storage_dir
+		tar -xzf $storage_dir/data_aishell.tgz -C $storage_dir
+		# rm -rf $storage_dir/data_aishell.tgz
+	fi
+
+
+}
+
 function wham() {
 	if ! test -e $wham_dir; then
 		echo "Download wham_noise into $storage_dir"
@@ -56,11 +69,13 @@ function wham() {
 	fi
 }
 
-LibriSpeech_dev_clean &
-LibriSpeech_test_clean &
-LibriSpeech_clean100 &
-LibriSpeech_clean360 &
-wham &
+# LibriSpeech_dev_clean &
+# LibriSpeech_test_clean &
+# LibriSpeech_clean100 &
+# LibriSpeech_clean360 &
+# wham &
+
+AISHELL1 &
 
 wait
 
